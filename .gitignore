@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
 # C extensions
 *.so
 
@@ -130,3 +131,5 @@ dmypy.json
 
 # .idea
 .idea
+/fastapi.db
+/vevn/
