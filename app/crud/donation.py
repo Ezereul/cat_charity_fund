@@ -23,7 +23,7 @@ class DonationCRUD(CRUDBase):
             session: AsyncSession,
     ) -> List[Donation]:
         donations = await session.scalars(
-            select(self.model).where(self.model.fully_invested == False)
+            select(self.model).where(self.model.fully_invested == False) # noqa
         )
         return donations.all()
 

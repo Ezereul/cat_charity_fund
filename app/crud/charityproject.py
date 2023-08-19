@@ -54,7 +54,7 @@ class CharityProjectCRUD(CRUDBase):
             session: AsyncSession
     ) -> List[CharityProject]:
         open_projects = await session.scalars(
-            select(self.model).where(self.model.fully_invested == False)
+            select(self.model).where(self.model.fully_invested == False) # noqa
         )
         return open_projects.all()
 
