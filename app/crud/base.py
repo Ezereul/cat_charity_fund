@@ -41,4 +41,3 @@ class CRUDBase:
         await session.commit()
         await session.refresh(db_obj)
         return db_obj
-

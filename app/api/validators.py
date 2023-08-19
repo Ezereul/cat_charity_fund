@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.charityproject import charityproject_crud
 from app.models import CharityProject
-from app.schemas.charityproject import CharityProjectUpdate
+from app.schemas.charity_project import CharityProjectUpdate
 
 
 async def check_charity_project_duplicate(
@@ -13,8 +13,8 @@ async def check_charity_project_duplicate(
     charity_project = await charityproject_crud.get_project_by_name(project_name, session)
     if charity_project is not None:
         raise HTTPException(
-            status_code=422,
-            detail='Проектс с таким именем уже существует'
+            status_code=400,
+            detail='Проект с таким именем уже существует!'
         )
 
 
@@ -26,7 +26,7 @@ async def check_charity_project_exists(
 
     if not charity_project:
         raise HTTPException(
-            status_code=404,detail='Проект не найден.')
+            status_code=404, detail='Проект не найден.')
 
     return charity_project
 
@@ -36,8 +36,8 @@ async def check_charity_project_deletable(
 ):
     if charity_project.invested_amount > 0:
         raise HTTPException(
-            status_code=422,
-            detail='Нельзя удалять проинвестированный проект'
+            status_code=400,
+            detail='В проект были внесены средства, не подлежит удалению!'
         )
 
 
@@ -49,4 +49,9 @@ async def check_charity_project_before_edit(
         raise HTTPException(
             status_code=422,
             detail='Требуемая сумма не может быть меньше уже внесенной'
+        )
+    if charity_project.fully_invested:
+        raise HTTPException(
+            status_code=400,
+            detail='Закрытый проект нельзя редактировать!'
         )

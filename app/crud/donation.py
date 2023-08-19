@@ -28,4 +28,4 @@ class DonationCRUD(CRUDBase):
         return donations.all()
 
 
-donation_crud = CRUDBase(Donation)
+donation_crud = DonationCRUD(Donation)

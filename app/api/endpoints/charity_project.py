@@ -3,20 +3,28 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.validators import check_charity_project_exists, check_charity_project_deletable, \
+from app.api.validators import (
+    check_charity_project_exists, check_charity_project_deletable,
     check_charity_project_before_edit, check_charity_project_duplicate
+)
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charityproject import charityproject_crud
-from app.schemas.charityproject import CharityProjectDB, CharityProjectUpdate, CharityProjectCreate
-from app.services.charityproject_investing import charity_project_investing
+from app.crud.donation import donation_crud
+from app.schemas.charity_project import (
+    CharityProjectDB, CharityProjectUpdate, CharityProjectCreate
+)
+from app.services.investing import distribute_investment
 
 
-router = APIRouter(prefix='/charity_project', tags=['charity_projects'])
+router = APIRouter()
 
 
-@router.get('/', response_model=List[CharityProjectDB])
-async def get_all_projects(session: AsyncSession = Depends(get_async_session)):
+@router.get('/',
+            response_model=List[CharityProjectDB],
+            response_model_exclude_none=True)
+async def get_all_charity_projects(
+        session: AsyncSession = Depends(get_async_session)):
     return await charityproject_crud.get_multi(session)
 
 
@@ -35,15 +43,19 @@ async def delete_charity_project(
 
 @router.post('/',
              response_model=CharityProjectDB,
-             dependencies=[Depends(current_superuser)])
+             dependencies=[Depends(current_superuser)],
+             response_model_exclude_none=True)
 async def create_charity_project(
         obj_in: CharityProjectCreate,
         session: AsyncSession = Depends(get_async_session)
 ):
     await check_charity_project_duplicate(obj_in.name, session)
     charity_project = await charityproject_crud.create(obj_in, session)
-    await charity_project_investing(charity_project, session)
+    opened_donations = await donation_crud.get_opened_donations(session)
+    charity_project = await distribute_investment(
+        charity_project, opened_donations, session)
 
+    return charity_project
 
 
 @router.patch('/{project_id}',
@@ -52,8 +64,12 @@ async def create_charity_project(
 async def update_charity_project(
         project_id: int,
         obj_in: CharityProjectUpdate,
-        session: AsyncSession
+        session: AsyncSession = Depends(get_async_session)
 ):
     charity_project = await check_charity_project_exists(project_id, session)
+    await check_charity_project_duplicate(obj_in.name, session)
     await check_charity_project_before_edit(charity_project, obj_in)
-    pass
+    charity_project = await charityproject_crud.update(
+        charity_project, obj_in, session)
+
+    return charity_project

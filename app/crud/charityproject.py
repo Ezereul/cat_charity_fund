@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import List
+
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +18,9 @@ class CharityProjectCRUD(CRUDBase):
     ):
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(exclude_unset=True)
+        if update_data.get('full_amount') and update_data.get('full_amount') == db_obj.invested_amount:
+            setattr(db_obj, 'fully_invested', True)
+            setattr(db_obj, 'close_date', datetime.utcnow())
 
         for field in obj_data:
             if field in update_data:
@@ -43,5 +49,14 @@ class CharityProjectCRUD(CRUDBase):
         )
         return project.first()
 
+    async def get_open_projects(
+            self,
+            session: AsyncSession
+    ) -> List[CharityProject]:
+        open_projects = await session.scalars(
+            select(self.model).where(self.model.fully_invested == False)
+        )
+        return open_projects.all()
 
-charityproject_crud = CRUDBase(CharityProject)
+
+charityproject_crud = CharityProjectCRUD(CharityProject)

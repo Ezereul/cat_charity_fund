@@ -133,3 +133,4 @@ dmypy.json
 .idea
 /fastapi.db
 /vevn/
+/test.db

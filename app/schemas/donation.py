@@ -16,9 +16,9 @@ class DonationCreate(DonationBase):
     pass
 
 
-class DonationUser(BaseModel):
+class DonationUser(DonationBase):
     id: int
-    create_date = datetime
+    create_date: datetime
 
     class Config:
         orm_mode = True
