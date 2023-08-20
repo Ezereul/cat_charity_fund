@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,15 +13,6 @@ class DonationCRUD(CRUDBase):
     ):
         donations = await session.scalars(
             select(self.model).where(self.model.user_id == user.id)
-        )
-        return donations.all()
-
-    async def get_opened_donations(
-            self,
-            session: AsyncSession,
-    ) -> List[Donation]:
-        donations = await session.scalars(
-            select(self.model).where(self.model.fully_invested == False) # noqa
         )
         return donations.all()
 

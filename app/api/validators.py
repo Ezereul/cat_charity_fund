@@ -31,7 +31,7 @@ async def check_charity_project_exists(
     return charity_project
 
 
-async def check_charity_project_deletable(
+def check_charity_project_deletable(
         charity_project: CharityProject,
 ):
     if charity_project.invested_amount > 0:
@@ -41,7 +41,7 @@ async def check_charity_project_deletable(
         )
 
 
-async def check_charity_project_before_edit(
+def check_charity_project_before_edit(
         charity_project: CharityProject,
         obj_in: CharityProjectUpdate,
 ):

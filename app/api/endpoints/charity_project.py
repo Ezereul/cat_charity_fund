@@ -36,7 +36,7 @@ async def delete_charity_project(
         session: AsyncSession = Depends(get_async_session),
 ):
     charity_project = await check_charity_project_exists(project_id, session)
-    await check_charity_project_deletable(charity_project)
+    check_charity_project_deletable(charity_project)
 
     return await charityproject_crud.remove(charity_project, session)
 
@@ -50,11 +50,14 @@ async def create_charity_project(
         session: AsyncSession = Depends(get_async_session)
 ):
     await check_charity_project_duplicate(obj_in.name, session)
-    charity_project = await charityproject_crud.create(obj_in, session)
-    opened_donations = await donation_crud.get_opened_donations(session)
-    charity_project = await distribute_investment(
-        charity_project, opened_donations, session)
 
+    charity_project = await charityproject_crud.create(
+        obj_in, session, to_commit=False)
+    opened_donations = await donation_crud.get_opened_donations(session)
+    charity_project = distribute_investment(charity_project, opened_donations)
+
+    await session.commit()
+    await session.refresh(charity_project)
     return charity_project
 
 
@@ -68,7 +71,7 @@ async def update_charity_project(
 ):
     charity_project = await check_charity_project_exists(project_id, session)
     await check_charity_project_duplicate(obj_in.name, session)
-    await check_charity_project_before_edit(charity_project, obj_in)
+    check_charity_project_before_edit(charity_project, obj_in)
     charity_project = await charityproject_crud.update(
         charity_project, obj_in, session)
 
