@@ -1,19 +1,17 @@
-from dataclasses import dataclass
 from datetime import datetime
-from typing import List
+from typing import List, Protocol
 
 
-@dataclass
-class InvestmentUnit:
+class InvestmentUnit(Protocol):
     full_amount: int
     invested_amount: int
     fully_invested: bool
-    close_date: datetime = None
+    close_date: datetime
 
 
 def distribute_investment(
         source: InvestmentUnit,
-        targets: List[InvestmentUnit]):
+        targets: List[InvestmentUnit]) -> List[InvestmentUnit]:
     changed_targets = []
     for target in targets:
         investment = min(
@@ -26,8 +24,5 @@ def distribute_investment(
                 unit.fully_invested = True
                 unit.close_date = datetime.utcnow()
         changed_targets.append(target)
-
-        if source.invested_amount == source.full_amount:
-            break
 
     return changed_targets

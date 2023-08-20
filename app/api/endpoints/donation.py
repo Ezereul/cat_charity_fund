@@ -41,10 +41,13 @@ async def create_donation(
         user: User = Depends(current_user)
 ):
     donation = await donation_crud.create(obj_in, session, user, False)
-    opened_projects = await charityproject_crud.get_open_investments(session)
-    changed_projects = distribute_investment(donation, opened_projects)
 
-    session.add_all(changed_projects)
+    session.add_all(
+        distribute_investment(
+            donation,
+            await charityproject_crud.get_open(session)
+        )
+    )
     await session.commit()
     await session.refresh(donation)
     return donation
