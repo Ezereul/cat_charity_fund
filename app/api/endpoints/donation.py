@@ -18,7 +18,9 @@ router = APIRouter()
             response_model=List[DonationDB],
             dependencies=[Depends(current_superuser)],
             response_model_exclude_none=True)
-async def get_all_donations(session: AsyncSession = Depends(get_async_session)):
+async def get_all_donations(
+        session: AsyncSession = Depends(get_async_session)
+):
     return await donation_crud.get_multi(session)
 
 
@@ -39,9 +41,10 @@ async def create_donation(
         user: User = Depends(current_user)
 ):
     donation = await donation_crud.create(obj_in, session, user, False)
-    opened_projects = await charityproject_crud.get_open_projects(session)
-    donation = distribute_investment(donation, opened_projects)
+    opened_projects = await charityproject_crud.get_open_investments(session)
+    changed_projects = distribute_investment(donation, opened_projects)
 
+    session.add_all(changed_projects)
     await session.commit()
     await session.refresh(donation)
     return donation

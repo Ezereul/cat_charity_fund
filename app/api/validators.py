@@ -10,7 +10,8 @@ async def check_charity_project_duplicate(
         project_name: str,
         session: AsyncSession
 ):
-    charity_project = await charityproject_crud.get_project_by_name(project_name, session)
+    charity_project = await charityproject_crud.get_project_by_name(
+        project_name, session)
     if charity_project is not None:
         raise HTTPException(
             status_code=400,
@@ -45,7 +46,8 @@ def check_charity_project_before_edit(
         charity_project: CharityProject,
         obj_in: CharityProjectUpdate,
 ):
-    if obj_in.full_amount and obj_in.full_amount < charity_project.invested_amount:
+    if (obj_in.full_amount and
+            obj_in.full_amount < charity_project.invested_amount):
         raise HTTPException(
             status_code=422,
             detail='Требуемая сумма не может быть меньше уже внесенной'

@@ -6,14 +6,6 @@ from app.models import CharityProject
 
 
 class CharityProjectCRUD(CRUDBase):
-    async def remove(
-            self,
-            db_obj,
-            session: AsyncSession,
-    ):
-        await session.delete(db_obj)
-        await session.commit()
-        return db_obj
 
     async def get_project_by_name(
             self,

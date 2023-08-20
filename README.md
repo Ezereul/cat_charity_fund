@@ -42,7 +42,7 @@ git clone https://github.com/Ezereul/cat_charity_fund.git
 python -m venv venv
 source venv/Scripts/activate
 ```
-Установить зависимости
+Обновить pip и установить зависимости
 ```bash
 python -m pip install --upgrade pip
 pip install -r requiremtns.txt
@@ -54,11 +54,11 @@ uvicorn app.main:app
 
 ### Справка 
 
-Спецификация проекта доступна по [ссылке](https://code.s3.yandex.net/Python-dev/openapi.json)
+Спецификация проекта доступна по [ссылке](https://redocly.github.io/redoc/?url=https://code.s3.yandex.net/Python-dev/openapi.json)
 
 ### Автор
 Исаев Максим
 
 Вы можете связаться с автором 
-- **Telegram**: @ezkoc
-- **Почта**: isaev_0602@mail.ru
+- **Telegram**: [@ezkoc](https://t.me/ezkoc)
+- **Почта**: [isaev_0602@mail.ru](mailto:isaev_0602@mail.ru)
