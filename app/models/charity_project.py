@@ -9,5 +9,5 @@ class CharityProject(InvestmentBase):
 
     def __repr__(self):
         return (f'<CharityProject(name="{self.name}", '
-                f'description="{self.description}", '
-                + super().__repr__())
+                f'description="{self.description}", ' +
+                super().__repr__())

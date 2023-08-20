@@ -9,5 +9,5 @@ class Donation(InvestmentBase):
 
     def __repr__(self):
         return (f'<Donation(user_id={self.user_id}, '
-                f'comment="{self.comment}", '
-                + super().__repr__())
+                f'comment="{self.comment}", ' +
+                super().__repr__())

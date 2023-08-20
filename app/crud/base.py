@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
@@ -56,7 +56,8 @@ class CRUDBase:
     ):
         obj_data = jsonable_encoder(db_obj)
         update_data = obj_in.dict(exclude_unset=True)
-        if update_data.get('full_amount') and update_data.get('full_amount') == db_obj.invested_amount:
+        if (update_data.get('full_amount') and
+                update_data.get('full_amount') == db_obj.invested_amount):
             setattr(db_obj, 'fully_invested', True)
             setattr(db_obj, 'close_date', datetime.utcnow())
 
